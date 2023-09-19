@@ -2,10 +2,17 @@
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2, SQSHandler } from "aws-lambda";
 // const dynamodb = new AWS.DynamoDB.DocumentClient();
 
-export const handler: SQSHandler = async (event: any) => {
+export const handler: any = async (event: any) => {
+    // export const handler: SQSHandler = async (event: any) => {
     console.log("EVENT ===>", event);
     const records = event.Records;
     console.log("RECORDS================>", records);
+
+    return {
+        statusCode:400,
+        body:"Bad request"
+    }
+
     try {
         // call a function which write data using writebatch or any other in dynamodb table
         console.log("Successfully try: ", records);

@@ -22,13 +22,18 @@ export class SqsQueueStack extends cdk.Stack {
     let sqsLambda = new lambda.Function(this, "sqsLambda", {
       runtime: lambda.Runtime.NODEJS_16_X,
       code: lambda.Code.fromAsset("lambda"),
-      handler: "index.handler",
+      handler: "post.handler",
+    });
+    let sqsTriggerLambda = new lambda.Function(this, "sqsTriggerLambda", {
+      runtime: lambda.Runtime.NODEJS_16_X,
+      code: lambda.Code.fromAsset("lambda"),
+      handler: "queue.handler",
     });
     // example resource
     let deadLatterQueue = new sqs.Queue(this, 'deadLatterQueue', {
       queueName: "deadLatterQueue",
     });
-    const queue = new sqs.Queue(this, 'SqsQueueQueue', {
+    const queue = new sqs.Queue(this, 'SqsQueueQueue', {  
       queueName: "SqsQueueQueue",
       deadLetterQueue: {
         maxReceiveCount: 3,
@@ -53,10 +58,10 @@ export class SqsQueueStack extends cdk.Stack {
       }
     });
 
-    let apigw_integrationLambda = new apigw_integrationv2.HttpLambdaIntegration("apigw_integration1", sqsLambda);
+    let apigw_integrationLambda = new apigw_integrationv2.HttpLambdaIntegration("apigw_integration1", sqsTriggerLambda);
 
     HttpApi.addRoutes({
-      path: "/squeue",
+      path: "/caller",
       methods: [apigwv2.HttpMethod.POST],
       integration: apigw_integrationLambda
     });
